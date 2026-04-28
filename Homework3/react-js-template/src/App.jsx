@@ -1,6 +1,12 @@
 import RenderOptions from "./component/options";
-import { BarChart } from "./component/example";
+// import { BarChart } from "./component/example";
+import { useState } from "react";
+import LineChart from "./component/LineChart";
+
 function App() {
+  // by default: ""
+  const [selectedStock, setSelectStock] = useState("")
+
   return (
     <div className="flex flex-col h-full w-full">
       <header className="bg-zinc-400 text-white p-2 flex flex-row align-center">
@@ -10,19 +16,30 @@ function App() {
           <select
             id="bar-select"
             className="bg-white text-black p-2 rounded mx-2"
+            value={selectedStock}
+            onChange={(e) => setSelectStock(e.target.value)}
           >
+            {/* add a disabled default option */}
+            <option value="" disabled>
+              ---Select a stock---
+            </option>
             <RenderOptions />
           </select>
         </label>
       </header>
       <div className="flex flex-row h-full w-full">
         <div className="flex flex-col w-2/3">
+          {/* top left */}
           <div className="h-1/4 p-2">
             <h3 className="text-left text-xl">
-              View 1 to be replaced by the view title
+              {/* Stock overview line chart: {selectedStock} */}
             </h3>
-            <div className="border-2 border-gray-300 rounded-xl">
-              <BarChart />
+            <div className="border-2 border-gray-300 rounded-xl w-full h-64 overflow-hidden relative flex justify-center items-center">
+              {selectedStock === "" ? (
+                <p className="text-gray-500">Please select a stock from the menu above to view the chart.</p>
+              ) : (
+                <LineChart selectedStock={selectedStock} />
+              )}
             </div>
           </div>
           <div className="h-3/4 p-2">
