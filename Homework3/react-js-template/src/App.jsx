@@ -2,6 +2,7 @@ import RenderOptions from "./component/options";
 // import { BarChart } from "./component/example";
 import { useState } from "react";
 import LineChart from "./component/LineChart";
+import TSNEScatter from "./component/TSNEScatter";
 
 function App() {
   // by default: ""
@@ -29,7 +30,7 @@ function App() {
       </header>
       <div className="flex flex-row h-full w-full">
         <div className="flex flex-col w-2/3">
-          {/* top left */}
+          {/* View 1: top left */}
           <div className="h-1/4 p-2">
             <h3 className="text-left text-xl">
               {/* Stock overview line chart: {selectedStock} */}
@@ -42,15 +43,18 @@ function App() {
               )}
             </div>
           </div>
+          {/* View 2: bottom left */}
           <div className="h-3/4 p-2">
             <h3 className="text-left text-xl h-8">
-              View 2 to be replaced by the view title
+              {/* View 2 to be replaced by the view title */}
             </h3>
-            <div className="border-2 border-gray-300 rounded-xl h-[calc(100%_-_2rem)]">
-              <p className="text-center text-gray-500 mt-20">Empty View 2</p>
+            <div className="border-2 border-gray-300 rounded-xl w-full h-[calc(100%_-_2rem)] relative overflow-hidden">
+              {/* <p className="text-center text-gray-500 mt-20">Empty View 2</p> */}
+              <TSNEScatter selectedStock={selectedStock} />
             </div>
           </div>
         </div>
+        {/* View 3: Right */}
         <div className="w-1/3 h-full p-2">
           <h3 className="text-left text-xl h-8">
             View 3 to be replaced by the view title
