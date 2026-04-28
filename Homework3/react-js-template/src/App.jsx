@@ -3,6 +3,7 @@ import RenderOptions from "./component/options";
 import { useState } from "react";
 import LineChart from "./component/LineChart";
 import TSNEScatter from "./component/TSNEScatter";
+import NewsList from "./component/NewsList";
 
 function App() {
   // by default: ""
@@ -13,7 +14,7 @@ function App() {
       <header className="bg-zinc-400 text-white p-2 flex flex-row align-center">
         <h2 className="text-left text-2xl">Homework 3</h2>
         <label htmlFor="bar-select" className="mx-2">
-          Select a category:
+          Select a stock:
           <select
             id="bar-select"
             className="bg-white text-black p-2 rounded mx-2"
@@ -55,12 +56,12 @@ function App() {
           </div>
         </div>
         {/* View 3: Right */}
-        <div className="w-1/3 h-full p-2">
-          <h3 className="text-left text-xl h-8">
-            View 3 to be replaced by the view title
+        <div className="w-1/3 h-full p-2 flex flex-col">
+          <h3 className="h-6 text-left text-lg font-bold truncate">
+            News {selectedStock ? `- ${selectedStock}` : "- Latest Market"}
           </h3>
           <div className="border-2 border-gray-300 rounded-xl h-[calc(100%-2rem)]">
-            <p className="text-center text-gray-500 mt-20">Empty View 3</p>
+              <NewsList selectedStock={selectedStock} />
           </div>
         </div>
       </div>
