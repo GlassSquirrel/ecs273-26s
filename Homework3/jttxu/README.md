@@ -29,5 +29,8 @@ data/
 │    └── ...
 └── tsne.csv
 ```
+Note: `tsne.csv` should contain one row per stock and include the stock ticker, two t-SNE coordinates, and the sector label.
+
+## Visualization instruction
 
 

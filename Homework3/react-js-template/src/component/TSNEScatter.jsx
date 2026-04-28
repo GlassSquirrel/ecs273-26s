@@ -12,7 +12,7 @@ export default function TSNEScatter({ selectedStock }) {
 
       if (width === 0 || height === 0) return;
 
-      const margin = { top: 30, right: 160, bottom: 40, left: 40 };
+      const margin = { top: 30, right: 160, bottom: 50, left: 50 };
       const innerWidth = width - margin.left - margin.right;
       const innerHeight = height - margin.top - margin.bottom;
 
@@ -31,19 +31,16 @@ export default function TSNEScatter({ selectedStock }) {
         .attr("width", innerWidth)
         .attr("height", innerHeight);
 
-      // 读取数据
+      // read in data
       d3.csv("/data/tsne.csv").then((data) => {
-        
-        // 🚨 核心修复点在这里 🚨
-        // 我们强制把 CSV 里的 't-SNE_Dim1' 和 't-SNE_Dim2' 抓取出来，存给 X 和 Y
         const formattedData = data.map(d => ({
           Ticker: d.Ticker,
           Sector: d.Sector,
-          X: +d['t-SNE_Dim1'], // 对应你 csv 的真实列名
-          Y: +d['t-SNE_Dim2']  // 对应你 csv 的真实列名
+          X: +d['t-SNE_Dim1'], 
+          Y: +d['t-SNE_Dim2'] 
         })).filter(d => !isNaN(d.X) && !isNaN(d.Y));
 
-        // 如果解析后数据是空的，在控制台报错提示
+        // if data is empty
         if (formattedData.length === 0) {
             console.error("No valid data found! Check if the CSV path is correct and accessible.");
             return;
@@ -65,6 +62,27 @@ export default function TSNEScatter({ selectedStock }) {
 
         const yAxisG = g.append("g")
           .call(d3.axisLeft(yScale));
+
+        // add label for x-axes
+        g.append("text")
+          .attr("class", "x-axis-label")
+          .attr("text-anchor", "middle")
+          .attr("x", innerWidth / 2)
+          .attr("y", innerHeight + 40)
+          .text("t-SNE Dimension 1")
+          .style("font-size", "14px")
+          .style("fill", "#666");
+
+        // add label for y-axes
+        g.append("text")
+          .attr("class", "y-axis-label")
+          .attr("text-anchor", "middle")
+          .attr("transform", "rotate(-90)")
+          .attr("x", -innerHeight / 2)
+          .attr("y", -35)
+          .text("t-SNE Dimension 2")
+          .style("font-size", "14px")
+          .style("fill", "#666");
 
         const scatterGroup = g.append("g").attr("clip-path", "url(#scatter-clip)");
 

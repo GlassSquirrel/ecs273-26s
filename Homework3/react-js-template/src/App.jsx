@@ -31,11 +31,11 @@ function App() {
       <div className="flex flex-row h-full w-full">
         <div className="flex flex-col w-2/3">
           {/* View 1: top left */}
-          <div className="h-1/4 p-2">
+          <div className="h-1/4 pt-2 px-2 pb-1 flex flex-col">
             <h3 className="text-left text-xl">
-              {/* Stock overview line chart: {selectedStock} */}
+              Stock overview line chart: {selectedStock}
             </h3>
-            <div className="border-2 border-gray-300 rounded-xl w-full h-64 overflow-hidden relative flex justify-center items-center">
+            <div className="border-2 border-gray-300 rounded-xl w-full flex-1 overflow-hidden relative flex justify-center items-center">
               {selectedStock === "" ? (
                 <p className="text-gray-500">Please select a stock from the menu above to view the chart.</p>
               ) : (
@@ -44,9 +44,9 @@ function App() {
             </div>
           </div>
           {/* View 2: bottom left */}
-          <div className="h-3/4 p-2">
+          <div className="h-3/4 pt-1 px-2 pb-2">
             <h3 className="text-left text-xl h-8">
-              {/* View 2 to be replaced by the view title */}
+              t-SNE scatter plot for the selected 20 stocks
             </h3>
             <div className="border-2 border-gray-300 rounded-xl w-full h-[calc(100%_-_2rem)] relative overflow-hidden">
               {/* <p className="text-center text-gray-500 mt-20">Empty View 2</p> */}

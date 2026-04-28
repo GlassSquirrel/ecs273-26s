@@ -8,14 +8,14 @@ export default function LineChart({ selectedStock }) {
   useEffect(() => {
     if (!selectedStock) return;
 
-    // 1. 获取容器尺寸
+    // 1. get container size
     const width = wrapperRef.current.clientWidth;
     const height = wrapperRef.current.clientHeight;
-    const margin = { top: 20, right: 120, bottom: 30, left: 50 };
+    const margin = { top: 20, right: 120, bottom: 40, left: 60 };
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
-    // 清空之前的图表 (防止切换股票时重叠)
+    // clean the window, in case of overlap
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
@@ -68,6 +68,27 @@ export default function LineChart({ selectedStock }) {
         .call(d3.axisBottom(xScale));
 
       const yAxis = g.append("g").call(d3.axisLeft(yScale));
+
+      // add x label
+      g.append("text")
+        .attr("class", "x-axis-label")
+        .attr("text-anchor", "middle")
+        .attr("x", innerWidth / 2)
+        .attr("y", innerHeight + 35)
+        .text("Date")
+        .style("font-size", "14px")
+        .style("fill", "#666");
+
+      // add y label
+      g.append("text")
+        .attr("class", "y-axis-label")
+        .attr("text-anchor", "middle")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -innerHeight / 2)
+        .attr("y", -30)
+        .text("Price (USD)")
+        .style("font-size", "14px")
+        .style("fill", "#666");
 
       // 6. 准备绘制线条的工具 (Line Generators)
       const metrics = [
