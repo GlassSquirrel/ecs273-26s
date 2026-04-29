@@ -1,101 +1,140 @@
-import React, { useState, useEffect } from "react";
-import * as d3 from "d3";
+import { useState, useEffect } from "react";
 
-const allNewsFiles = import.meta.glob('../../data/stocknews/**/*.txt', { as: 'raw', eager: true });
+const API_BASE = "http://localhost:3001/api";
 
 export default function NewsList({ selectedStock }) {
-  const [news, setNews] = useState([]);
-  // 记录当前哪一条新闻被展开了 (null 表示全部收起)
-  const [expandedIndex, setExpandedIndex] = useState(null);
+  const [newsList, setNewsList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [expandedId, setExpandedId] = useState(null);
+  const [expandedContent, setExpandedContent] = useState({});
+  const [loadingContent, setLoadingContent] = useState(null);
 
+  // when selectedStock changes, get the news list
   useEffect(() => {
-    // 每次切换股票时，自动把展开的新闻收起
-    setExpandedIndex(null);
-
-    // 1. 如果没有选择股票：清空新闻列表，直接 return
     if (!selectedStock) {
-      setNews([]);
+      setNewsList([]);
+      setExpandedId(null);
       return;
     }
 
-    // 2. 动态筛选并解析当前股票的新闻
-    const stockNews = [];
-    
-    // 遍历抓取到的所有文件路径
-    for (const path in allNewsFiles) {
-      // 检查这个路径是不是属于当前选中的股票 (比如包含 "/AAPL/")
-      if (path.includes(`/${selectedStock}/`)) {
-        // 获取 txt 文件的纯文本内容
-        const rawContent = allNewsFiles[path];
-        
-        // 从路径中提取文件名 (例如从 "/public/.../2026-04-24 10-35_This is news.txt" 中提取最后一部分)
-        const filename = path.split('/').pop().replace('.txt', '');
-        
-        // 解析文件名，提取日期和标题
-        let date = "Unknown Date";
-        let title = filename;
-        
-        // 假设你的文件名格式是 "2026-04-24 10-35_新闻标题"
-        if (filename.includes('_')) {
-          // 在第一个下划线处切开
-          const firstUnderscoreIndex = filename.indexOf('_');
-          const dateTimePart = filename.substring(0, firstUnderscoreIndex); // "2026-04-24 10-35"
-          
-          date = dateTimePart.split(' ')[0]; // 只取 "2026-04-24"
-          title = filename.substring(firstUnderscoreIndex + 1); // 剩下的全部作为标题
-        }
+    setLoading(true);
+    setExpandedId(null);
 
-        // 把拼装好的新闻塞进数组
-        stockNews.push({
-          Title: title,
-          Date: date,
-          Content: rawContent
-        });
-      }
-    }
-
-    // 3. 将新闻按照日期从新到旧排序 (降序)
-    stockNews.sort((a, b) => new Date(b.Date) - new Date(a.Date));
-    
-    // 更新到页面上
-    setNews(stockNews);
-
+    fetch(`${API_BASE}/news/${selectedStock}`)
+      .then((r) => r.json())
+      .then((data) => {
+        setNewsList(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, [selectedStock]);
 
-  return (
-    <div className="w-full h-full overflow-y-auto p-3">
-      {!selectedStock ? (
-        <div className="flex flex-col items-center justify-center h-full text-gray-400 mt-10">
-          <p>Please select a stock from the menu above.</p>
-        </div>
-      ) : news.length === 0 ? (
-        <p className="text-gray-500 text-center mt-10">No news available for {selectedStock}.</p>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {news.map((item, index) => (
-            <div
-              key={index}
-              className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
-            >
-              <div className="flex justify-between items-start">
-                <h4 className="text-sm font-semibold text-blue-900 flex-1 pr-2">
-                  {item.Title}
-                </h4>
-                <span className="text-xs text-gray-500 whitespace-nowrap pt-0.5">
-                  {item.Date}
-                </span>
-              </div>
+  // 点击某条新闻：展开/收起，并懒加载全文
+  const handleToggle = async (item) => {
+    if (expandedId === item.id) {
+      setExpandedId(null);
+      return;
+    }
 
-              {expandedIndex === index && (
-                <div className="mt-2 pt-2 border-t border-gray-100 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                  {item.Content}
-                </div>
-              )}
+    setExpandedId(item.id);
+
+    // 如果还没加载过这条新闻的内容
+    if (!expandedContent[item.id]) {
+      setLoadingContent(item.id);
+      try {
+        const res = await fetch(
+          `${API_BASE}/news/${selectedStock}/${encodeURIComponent(item.filename)}`
+        );
+        const data = await res.json();
+        setExpandedContent((prev) => ({ ...prev, [item.id]: data.content }));
+      } catch {
+        setExpandedContent((prev) => ({
+          ...prev,
+          [item.id]: "Failed to load content.",
+        }));
+      } finally {
+        setLoadingContent(null);
+      }
+    }
+  };
+
+  // 格式化显示日期
+  const formatDate = (dateStr) => {
+    try {
+      return new Date(dateStr).toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  if (!selectedStock) {
+    return (
+      <div className="flex items-center justify-center h-full text-gray-400 text-sm px-4 text-center">
+        Select a stock to view related news.
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+        Loading news...
+      </div>
+    );
+  }
+
+  if (newsList.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full text-gray-400 text-sm px-4 text-center">
+        No news found for <strong className="ml-1">{selectedStock}</strong>.
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-full overflow-y-auto divide-y divide-gray-200">
+      {newsList.map((item) => {
+        const isExpanded = expandedId === item.id;
+        const isLoadingThis = loadingContent === item.id;
+
+        return (
+          <div
+            key={item.id}
+            className="px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors"
+            onClick={() => handleToggle(item)}
+          >
+            {/* 标题行 */}
+            <div className="flex items-start justify-between gap-2">
+              <p className="text-sm font-medium text-gray-800 leading-snug flex-1">
+                {item.title}
+              </p>
+              <span className="text-gray-400 text-xs mt-0.5 flex-shrink-0">
+                {isExpanded ? "▲" : "▼"}
+              </span>
             </div>
-          ))}
-        </div>
-      )}
+
+            {/* 日期 */}
+            <p className="text-xs text-gray-400 mt-0.5">{formatDate(item.date)}</p>
+
+            {/* 展开的全文 */}
+            {isExpanded && (
+              <div className="mt-2 text-sm text-gray-600 bg-gray-50 rounded-lg p-3 whitespace-pre-wrap leading-relaxed">
+                {isLoadingThis ? (
+                  <span className="text-gray-400 italic">Loading...</span>
+                ) : (
+                  expandedContent[item.id] || ""
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -13,6 +13,7 @@ After clone the repository, run the following code in the terminal to install `d
 cd ecs273-26s\Homework3\react-js-template
 npm install
 npm install d3
+npm install express cors
 ```
 
 ## Data requirements
