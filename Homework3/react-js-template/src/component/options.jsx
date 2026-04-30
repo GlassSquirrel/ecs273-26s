@@ -11,7 +11,7 @@ const stockTickers = [
 
 export default function RenderOptions() {
     // const bars = Data.data;
-    return stockTickers.map((ticker, index) => (
+    return stockTickers.sort().map((ticker, index) => (
       <option key={index} value={ticker}>
         {ticker}
       </option>

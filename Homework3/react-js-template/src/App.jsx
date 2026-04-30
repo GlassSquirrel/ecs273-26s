@@ -60,7 +60,7 @@ function App() {
           <h3 className="h-6 text-left text-lg font-bold truncate">
             News {selectedStock ? `- ${selectedStock}` : "- Latest Market"}
           </h3>
-          <div className="border-2 border-gray-300 rounded-xl h-[calc(100%-2rem)]">
+          <div className="border-2 border-gray-300 rounded-xl h-[calc(100%-2rem)] overflow-hidden">
               <NewsList selectedStock={selectedStock} />
           </div>
         </div>

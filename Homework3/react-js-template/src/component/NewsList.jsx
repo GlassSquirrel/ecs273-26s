@@ -106,25 +106,30 @@ export default function NewsList({ selectedStock }) {
         return (
           <div
             key={item.id}
-            className="px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors"
-            onClick={() => handleToggle(item)}
+            className="px-3 py-2 hover:bg-gray-50 transition-colors flex-shrink-0"
           >
-            {/* 标题行 */}
-            <div className="flex items-start justify-between gap-2">
-              <p className="text-sm font-medium text-gray-800 leading-snug flex-1">
-                {item.title}
-              </p>
-              <span className="text-gray-400 text-xs mt-0.5 flex-shrink-0">
-                {isExpanded ? "▲" : "▼"}
-              </span>
+            {/* 标题行 + 日期行：点击触发展开/收起 */}
+            <div
+              className="cursor-pointer"
+              onClick={() => handleToggle(item)}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-sm font-medium text-gray-800 leading-snug flex-1">
+                  {item.title}
+                </p>
+                <span className="text-gray-400 text-xs mt-0.5 flex-shrink-0">
+                  {isExpanded ? "▲" : "▼"}
+                </span>
+              </div>
+              <p className="text-xs text-gray-400 mt-0.5">{formatDate(item.date)}</p>
             </div>
 
-            {/* 日期 */}
-            <p className="text-xs text-gray-400 mt-0.5">{formatDate(item.date)}</p>
-
-            {/* 展开的全文 */}
+            {/* 展开的全文：点击不收起 */}
             {isExpanded && (
-              <div className="mt-2 text-sm text-gray-600 bg-gray-50 rounded-lg p-3 whitespace-pre-wrap leading-relaxed">
+              <div
+                className="mt-2 text-sm text-gray-600 bg-gray-50 rounded-lg p-3 whitespace-pre-wrap leading-relaxed"
+                onClick={(e) => e.stopPropagation()}
+              >
                 {isLoadingThis ? (
                   <span className="text-gray-400 italic">Loading...</span>
                 ) : (
