@@ -3,14 +3,16 @@ import { useState, useEffect } from "react";
 const API_BASE = "http://localhost:3001/api";
 
 export default function NewsList({ selectedStock }) {
+  // 1. create 5 states 
   const [newsList, setNewsList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [expandedId, setExpandedId] = useState(null);
-  const [expandedContent, setExpandedContent] = useState({});
+  const [expandedId, setExpandedId] = useState(null);  // which news has been expanded
+  const [expandedContent, setExpandedContent] = useState({});  // cache
   const [loadingContent, setLoadingContent] = useState(null);
 
-  // when selectedStock changes, get the news list
+  // 2. fetch the news list
   useEffect(() => {
+    // no stock selected
     if (!selectedStock) {
       setNewsList([]);
       setExpandedId(null);
@@ -18,8 +20,9 @@ export default function NewsList({ selectedStock }) {
     }
 
     setLoading(true);
-    setExpandedId(null);
+    setExpandedId(null);  // reset when changing the stock
 
+    // get the news list for the selected stock from the backend
     fetch(`${API_BASE}/news/${selectedStock}`)
       .then((r) => r.json())
       .then((data) => {
@@ -29,7 +32,7 @@ export default function NewsList({ selectedStock }) {
       .catch(() => setLoading(false));
   }, [selectedStock]);
 
-  // 点击某条新闻：展开/收起，并懒加载全文
+  // news expand or un-expand
   const handleToggle = async (item) => {
     if (expandedId === item.id) {
       setExpandedId(null);
@@ -38,7 +41,7 @@ export default function NewsList({ selectedStock }) {
 
     setExpandedId(item.id);
 
-    // 如果还没加载过这条新闻的内容
+    // lazy load
     if (!expandedContent[item.id]) {
       setLoadingContent(item.id);
       try {
@@ -46,6 +49,7 @@ export default function NewsList({ selectedStock }) {
           `${API_BASE}/news/${selectedStock}/${encodeURIComponent(item.filename)}`
         );
         const data = await res.json();
+        // update cache
         setExpandedContent((prev) => ({ ...prev, [item.id]: data.content }));
       } catch {
         setExpandedContent((prev) => ({
@@ -58,7 +62,7 @@ export default function NewsList({ selectedStock }) {
     }
   };
 
-  // 格式化显示日期
+  // date formate
   const formatDate = (dateStr) => {
     try {
       return new Date(dateStr).toLocaleString("en-US", {
@@ -73,6 +77,7 @@ export default function NewsList({ selectedStock }) {
     }
   };
 
+  // empty/loading states
   if (!selectedStock) {
     return (
       <div className="flex items-center justify-center h-full text-gray-400 text-sm px-4 text-center">
@@ -97,6 +102,7 @@ export default function NewsList({ selectedStock }) {
     );
   }
 
+  // 3. UI render
   return (
     <div className="h-full overflow-y-auto divide-y divide-gray-200">
       {newsList.map((item) => {
@@ -108,7 +114,7 @@ export default function NewsList({ selectedStock }) {
             key={item.id}
             className="px-3 py-2 hover:bg-gray-50 transition-colors flex-shrink-0"
           >
-            {/* 标题行 + 日期行：点击触发展开/收起 */}
+            {/* title + date: click to expand/un-expand */}
             <div
               className="cursor-pointer"
               onClick={() => handleToggle(item)}
@@ -124,7 +130,7 @@ export default function NewsList({ selectedStock }) {
               <p className="text-xs text-gray-400 mt-0.5">{formatDate(item.date)}</p>
             </div>
 
-            {/* 展开的全文：点击不收起 */}
+            {/* whole context */}
             {isExpanded && (
               <div
                 className="mt-2 text-sm text-gray-600 bg-gray-50 rounded-lg p-3 whitespace-pre-wrap leading-relaxed"

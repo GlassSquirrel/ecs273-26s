@@ -7,6 +7,7 @@ export default function TSNEScatter({ selectedStock }) {
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      // 1. get the container size
       const width = wrapperRef.current.clientWidth;
       const height = wrapperRef.current.clientHeight;
 
@@ -16,10 +17,11 @@ export default function TSNEScatter({ selectedStock }) {
       const innerWidth = width - margin.left - margin.right;
       const innerHeight = height - margin.top - margin.bottom;
 
+      // 2. set svg size
       const svg = d3.select(svgRef.current)
         .attr("width", width)
         .attr("height", height);
-
+      // clean old drawing
       svg.selectAll("*").remove();
 
       const g = svg.append("g")
@@ -31,7 +33,7 @@ export default function TSNEScatter({ selectedStock }) {
         .attr("width", innerWidth)
         .attr("height", innerHeight);
 
-      // read in data
+      // 3. read in data
       d3.csv("/data/tsne.csv").then((data) => {
         const formattedData = data.map(d => ({
           Ticker: d.Ticker,
@@ -46,6 +48,7 @@ export default function TSNEScatter({ selectedStock }) {
             return;
         }
 
+        // 4. set up scales
         const xScale = d3.scaleLinear()
           .domain(d3.extent(formattedData, d => d.X)).nice()
           .range([10, innerWidth - 10]);
@@ -56,6 +59,7 @@ export default function TSNEScatter({ selectedStock }) {
 
         const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
+        // 5. draw axes
         const xAxisG = g.append("g")
           .attr("transform", `translate(0,${innerHeight})`)
           .call(d3.axisBottom(xScale));
@@ -84,6 +88,7 @@ export default function TSNEScatter({ selectedStock }) {
           .style("font-size", "14px")
           .style("fill", "#666");
 
+        // 6. draw scatters
         const scatterGroup = g.append("g").attr("clip-path", "url(#scatter-clip)");
 
         const circles = scatterGroup.selectAll("circle")
@@ -112,7 +117,7 @@ export default function TSNEScatter({ selectedStock }) {
           .style("font-weight", "bold")
           .style("fill", "#333");
 
-        // 图例
+        // 7. legend
         const sectors = Array.from(new Set(formattedData.map((d) => d.Sector)));
         const legend = svg.append("g")
           .attr("transform", `translate(${width - margin.right + 20}, ${margin.top})`);
@@ -134,7 +139,7 @@ export default function TSNEScatter({ selectedStock }) {
             .text(sector);
         });
 
-        // 缩放
+        // 8. zooming and panning
         const zoom = d3.zoom()
           .scaleExtent([0.5, 10])
           .on("zoom", (event) => {

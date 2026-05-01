@@ -22,11 +22,12 @@ export default function LineChart({ selectedStock }) {
       // check whether it should be ignore
       if (ignore) return;
       
-      // clean the old svg
+      // set svg size
       const svg = d3.select(svgRef.current);
+      // clean old drawing
       svg.selectAll("*").remove();
 
-      // 2. create main svg
+      // 2. create the drawing group
       const g = svg
         .attr("width", width)
         .attr("height", height)
