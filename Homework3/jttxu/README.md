@@ -12,7 +12,7 @@ If you have not installed them yet, please go to the official website of [Node.j
 ## Installation
 After cloning the repository, nagivate to the project directoty and run the following code in the terminal to install all the required dependencies. 
 ```
-cd ecs273-26s\Homework3\react-js-template
+cd ecs273-26s\Homework3\jttxu
 npm install
 ```
 If you want to run both the frontend and backend with a single command, also install:
