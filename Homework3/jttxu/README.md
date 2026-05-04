@@ -56,4 +56,9 @@ npm run dev
 
 To see the dashboard visualization, click the local URL provided in the terminal, which usually is `http://localhost:5173/`.
 
-
+## Interaction
+This dashboard provides an interactive view of stock data. Here's the interaction instruction:
+1. **Select a Stock:** select a stock ticker from the dropdown menu at the top of the page. This action acts as a global trigger to synchronize all views on the dashboard.
+2. **View Stock Trends:** Once a stock is selected, the top-left view will automatically render a detailed line chart displaying the historical price trends (Open, High, Low, Close) for that specific stock. You can pan and zoom within the chart for a closer look.
+3. **Explore Market Clustering:** The bottom-left scatter plot displays a t-SNE projection of all available stocks. When you select a stock from the top menu, its corresponding data point will be dynamically highlighted and labeled on this map, allowing you to easily identify its position among sector peers.
+4. **Read Related News:** The right panel will update and display a list of news articles related specifically to your chosen stock. Click on any news headline to seamlessly expand and read the full article content via lazy loading. Click the headline again to collapse it.
