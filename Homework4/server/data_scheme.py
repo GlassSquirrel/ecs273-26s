@@ -26,6 +26,7 @@ class StockModelV1(BaseModel):
     High: list[float]
     Low: list[float]
     Close: list[float]
+    Volume: list[float]
     
 class StockModelUnit(BaseModel):
     """
@@ -36,6 +37,7 @@ class StockModelUnit(BaseModel):
     High: float
     Low: float
     Close: float
+    Volume: float
     
 class StockModelV2(BaseModel):
     """
@@ -50,6 +52,7 @@ class StockNewsModel(BaseModel):
     Stock: str
     Title: str
     Date: str  
+    Url: str
     content: str
     
 class StockNewsModelList(BaseModel):
@@ -64,3 +67,4 @@ class tsneDataModel(BaseModel):
     Stock: str
     x: float
     y: float
+    Sector: str
