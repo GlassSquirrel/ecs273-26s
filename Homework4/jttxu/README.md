@@ -7,6 +7,7 @@ Before running the application, ensure that you have the following installed:
 - Node.js & npm (for the frontend)
 - MongoDB Community Server (running locally on the default port `27017`, you can go to the [mongoDB official website](https://www.mongodb.com/try/download/community) to download the MongoDB Community Server.)
 - Python 3.x with conda environment `ecs273` (for the backend)
+
 First, activate the course environment:
 ```
 conda activate ecs273
@@ -39,11 +40,13 @@ data/
 │ └── ...
 └── tsne.csv
 ```
+
 Before running the code, make sure you have already installed and started your mongoDB local server. 
 For Mac, to test if MongoDB is actually running, run
 ```
 brew services start mongodb-community
 ```
+
 For Windows, press `Win+R`, then key in `services.msc`. See if you can find MongoDB Server is running. 
 If not running, open PowerShell as Administrator and run:
 ```
