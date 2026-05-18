@@ -5,7 +5,7 @@ This folder contains two parts, client and server.
 ## Prerequisites
 Before running the application, ensure that you have the following installed:
 - Node.js & npm (for the frontend)
-- MongoDB Community Server (running locally on the default port `27017`, You can go to the [mongoDB official website](https://www.mongodb.com/try/download/community) to download the MongoDB Community Server.)
+- MongoDB Community Server (running locally on the default port `27017`, you can go to the [mongoDB official website](https://www.mongodb.com/try/download/community) to download the MongoDB Community Server.)
 - Python 3.x with conda environment `ecs273` (for the backend)
 First, activate the course environment:
 ```
